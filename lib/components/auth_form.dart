@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:to_do_list/components/user_image_picker.dart';
 import 'package:to_do_list/models/auth_form_data.dart';
 
 class AuthForm extends StatefulWidget {
@@ -13,6 +16,10 @@ class _AuthFormState extends State<AuthForm> {
 
   final _formKey = GlobalKey<FormState>();
 
+  void _handleImagePick(File image) {
+    _formData.image = image;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -20,25 +27,29 @@ class _AuthFormState extends State<AuthForm> {
       child: Padding(
         padding: const EdgeInsets.all(15),
         child: Form(
+          key: _formKey,
           child: Column(
             children: [
-              TextFormField(
-                key: const ValueKey('name'),
-                initialValue: _formData.name,
-                onChanged: (name) => _formData.name = name,
-                decoration: InputDecoration(
-                  labelText: 'Nome de Usuário',
+              if (_formData.isSignup)
+                UserImagePicker(onImagePick: _handleImagePick),
+              if (_formData.isSignup)
+                TextFormField(
+                  key: const ValueKey('name'),
+                  initialValue: _formData.name,
+                  onChanged: (name) => _formData.name = name,
+                  decoration: InputDecoration(
+                    labelText: 'Nome de Usuário',
+                  ),
+                  validator: (textField) {
+                    final name = textField ?? '';
+
+                    if (name.trim().isEmpty) {
+                      return 'Nome de Usuário não pode ser vazio.';
+                    }
+
+                    return null;
+                  },
                 ),
-                validator: (textField) {
-                  final name = textField ?? '';
-
-                  if (name.trim().isEmpty) {
-                    return 'Nome de Usuário não pode ser vazio.';
-                  }
-
-                  return null;
-                },
-              ),
               TextFormField(
                 key: const ValueKey('email'),
                 initialValue: _formData.email,
