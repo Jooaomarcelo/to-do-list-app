@@ -5,7 +5,12 @@ import 'package:to_do_list/components/user_image_picker.dart';
 import 'package:to_do_list/models/auth_form_data.dart';
 
 class AuthForm extends StatefulWidget {
-  const AuthForm({super.key});
+  final void Function(AuthFormData) onSubmit;
+
+  const AuthForm({
+    required this.onSubmit,
+    super.key,
+  });
 
   @override
   State<AuthForm> createState() => _AuthFormState();
@@ -18,6 +23,25 @@ class _AuthFormState extends State<AuthForm> {
 
   void _handleImagePick(File image) {
     _formData.image = image;
+  }
+
+  void _showError(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(msg),
+      backgroundColor: Theme.of(context).colorScheme.error,
+    ));
+  }
+
+  void _submit() {
+    final isValid = _formKey.currentState?.validate() ?? false;
+
+    if (!isValid) return;
+
+    if (_formData.image == null && _formData.isSignup) {
+      _showError('Imagem não selecionada.');
+    }
+
+    widget.onSubmit(_formData);
   }
 
   @override
@@ -92,7 +116,7 @@ class _AuthFormState extends State<AuthForm> {
                 height: 15,
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: _submit,
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: Theme.of(context).colorScheme.primary,
