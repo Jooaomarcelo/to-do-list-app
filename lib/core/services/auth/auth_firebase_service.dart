@@ -38,6 +38,14 @@ class AuthFirebaseService implements AuthService {
 
     final auth = FirebaseAuth.instanceFor(app: signup);
 
+    // Ignorar o AppCheck em desenvolcimento
+    // await FirebaseAppCheck.instance.activate(
+    //   webRecaptchaSiteKey: 'fake-key',
+    // );
+
+    // Ignorar Warning de "X-Firebase-Locale"
+    auth.setLanguageCode('pt');
+
     // Criando credenciais
     UserCredential credential = await auth.createUserWithEmailAndPassword(
       email: email,
@@ -65,7 +73,7 @@ class AuthFirebaseService implements AuthService {
 
   @override
   Future<void> login(String email, String password) async {
-    FirebaseAuth.instance.signInWithEmailAndPassword(
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
@@ -73,7 +81,7 @@ class AuthFirebaseService implements AuthService {
 
   @override
   Future<void> logout() async {
-    FirebaseAuth.instance.signOut();
+    await FirebaseAuth.instance.signOut();
   }
 
   static UserData _toUserData(User user, [String? imageUrl]) {
@@ -100,7 +108,7 @@ class AuthFirebaseService implements AuthService {
     final storage = FirebaseFirestore.instance;
     final docRef = storage.collection('users').doc(user.id);
 
-    return docRef.set({
+    return await docRef.set({
       'name': user.name,
       'email': user.email,
       'imageUrl': user.imageUrl,

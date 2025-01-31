@@ -99,6 +99,7 @@ class _AuthFormState extends State<AuthForm> {
                 key: const ValueKey('password'),
                 initialValue: _formData.password,
                 onChanged: (password) => _formData.password = password,
+                obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Senha',
                 ),
