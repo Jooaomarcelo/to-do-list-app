@@ -38,7 +38,7 @@ class _AuthFormState extends State<AuthForm> {
     if (!isValid) return;
 
     if (_formData.image == null && _formData.isSignup) {
-      _showError('Imagem não selecionada.');
+      return _showError('Imagem não selecionada.');
     }
 
     widget.onSubmit(_formData);

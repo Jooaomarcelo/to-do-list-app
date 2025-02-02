@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:to_do_list/components/new_task.dart';
 import 'package:to_do_list/components/task_edit_form.dart';
@@ -13,7 +15,27 @@ class TasksPage extends StatefulWidget {
 }
 
 class _TasksPageState extends State<TasksPage> {
+  static const _defaultImage = 'assets/images/avatar.png';
+  final _currentUser = AuthService().currentUser;
+
   UserTask? _task;
+
+  Widget _showUserImage(String imageUrl) {
+    ImageProvider? provider;
+    final uri = Uri.parse(imageUrl);
+
+    if (uri.path.contains(_defaultImage)) {
+      provider = const AssetImage(_defaultImage);
+    } else if (uri.scheme.contains('http')) {
+      provider = NetworkImage(uri.toString());
+    } else {
+      provider = FileImage(File(uri.toString()));
+    }
+
+    return CircleAvatar(
+      backgroundImage: provider,
+    );
+  }
 
   void _onTaskToggle([UserTask? task]) {
     setState(() {
@@ -31,17 +53,20 @@ class _TasksPageState extends State<TasksPage> {
       appBar: AppBar(
         title: Text('Tarefas'),
         actions: [
-          PopupMenuButton(
-            icon: Icon(Icons.more_vert),
-            itemBuilder: (ctx) => [
-              PopupMenuItem(
-                value: 'logout',
-                child: Text('Sair'),
-              )
-            ],
-            onSelected: (value) {
-              if (value == 'logout') AuthService().logout();
-            },
+          Container(
+            margin: EdgeInsets.only(right: 10),
+            child: PopupMenuButton(
+              itemBuilder: (ctx) => [
+                PopupMenuItem(
+                  value: 'logout',
+                  child: Text('Sair'),
+                )
+              ],
+              onSelected: (value) {
+                if (value == 'logout') AuthService().logout();
+              },
+              child: _showUserImage(_currentUser?.imageUrl ?? _defaultImage),
+            ),
           )
         ],
       ),

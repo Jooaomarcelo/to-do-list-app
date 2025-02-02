@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:to_do_list/core/models/user_data.dart';
 import 'package:to_do_list/core/models/user_task.dart';
 import 'package:to_do_list/core/services/auth/auth_service.dart';
@@ -33,8 +32,6 @@ class TaskFirebaseService implements TaskService {
       createdAt: DateTime.now(),
       title: title,
     );
-
-    debugPrint('task: ${task.status.name}');
 
     final docRef = await store
         .collection('tasks')

@@ -60,7 +60,7 @@ class AuthFirebaseService implements AuthService {
 
     // Atualizando atributos do usuário
     await credential.user?.updateDisplayName(name);
-    await credential.user?.updateDisplayName(name);
+    await credential.user?.updatePhotoURL(imageUrl);
 
     // Fazendo o login do usuário
     await login(email, password);

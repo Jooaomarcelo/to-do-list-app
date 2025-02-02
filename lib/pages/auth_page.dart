@@ -13,6 +13,13 @@ class AuthPage extends StatefulWidget {
 class _AuthPageState extends State<AuthPage> {
   bool _isLoading = false;
 
+  void _showError(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(msg),
+      backgroundColor: Theme.of(context).colorScheme.error,
+    ));
+  }
+
   Future<void> _handleSubmit(AuthFormData formData) async {
     try {
       setState(() => _isLoading = true);
@@ -31,8 +38,7 @@ class _AuthPageState extends State<AuthPage> {
         );
       }
     } catch (error) {
-      // Handle error
-      debugPrint('Erro durante autenticação: $error');
+      _showError('Email ou senha inválida.');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

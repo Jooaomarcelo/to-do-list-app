@@ -15,6 +15,13 @@ class _NewTaskState extends State<NewTask> {
 
   final _taskController = TextEditingController();
 
+  void _showError(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(msg),
+      backgroundColor: Theme.of(context).colorScheme.error,
+    ));
+  }
+
   Future<void> _addTask() async {
     final user = AuthService().currentUser;
 
@@ -25,11 +32,12 @@ class _NewTaskState extends State<NewTask> {
 
       await TaskService().addTask(_task, user);
     } catch (error) {
-      debugPrint('Erro ao adicionar tarefa: $error');
+      _showError('$error');
     } finally {
       setState(() => _isLoading = false);
 
       _taskController.clear();
+      _task = '';
     }
   }
 
@@ -53,7 +61,11 @@ class _NewTaskState extends State<NewTask> {
                 ),
               ),
               onSubmitted: (_) {
-                if (_task.trim().isNotEmpty) _addTask();
+                if (_task.trim().isNotEmpty) {
+                  _addTask();
+                } else {
+                  _showError('A tarefa não pode ser vazia.');
+                }
               },
             ),
           ),
@@ -64,7 +76,11 @@ class _NewTaskState extends State<NewTask> {
               borderRadius: BorderRadius.all(Radius.circular(8)),
             ),
             onPressed: () {
-              if (_task.trim().isNotEmpty) _addTask();
+              if (_task.trim().isNotEmpty) {
+                _addTask();
+              } else {
+                _showError('A tarefa não pode ser vazia.');
+              }
             },
             child: _isLoading
                 ? CircularProgressIndicator(
