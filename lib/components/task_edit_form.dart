@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_list/core/models/user_task.dart';
+import 'package:to_do_list/core/services/task/task_service.dart';
 
-class TaskEditForm extends StatelessWidget {
+class TaskEditForm extends StatefulWidget {
   final UserTask task;
   final Function() onClosed;
 
@@ -10,6 +11,21 @@ class TaskEditForm extends StatelessWidget {
     required this.onClosed,
     super.key,
   });
+
+  @override
+  State<TaskEditForm> createState() => _TaskEditFormState();
+}
+
+class _TaskEditFormState extends State<TaskEditForm> {
+  String? _title;
+  TaskStatus? _status;
+
+  @override
+  void initState() {
+    super.initState();
+    _title = widget.task.title;
+    _status = widget.task.status;
+  }
 
   DropdownMenuItem _formatTaskStatus(TaskStatus status) {
     if (status == TaskStatus.pending) {
@@ -30,8 +46,9 @@ class TaskEditForm extends StatelessWidget {
     }
   }
 
-  void _submit() {
-    // To do
+  void _submit() async {
+    await TaskService().updateTask(_title!, _status!, widget.task);
+    widget.onClosed();
   }
 
   @override
@@ -60,18 +77,20 @@ class TaskEditForm extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                      onPressed: onClosed,
+                      onPressed: widget.onClosed,
                       icon: Icon(Icons.close),
                     )
                   ],
                 ),
                 TextFormField(
-                  initialValue: task.title,
+                  initialValue: _title,
+                  onChanged: (newTitle) => setState(() => _title = newTitle),
                 ),
                 DropdownButtonFormField(
-                  value: task.status,
+                  value: widget.task.status,
                   items: TaskStatus.values.map(_formatTaskStatus).toList(),
-                  onChanged: (newStatus) {},
+                  onChanged: (newStatus) =>
+                      setState(() => _status = newStatus as TaskStatus),
                 ),
                 Container(
                   margin: EdgeInsets.only(top: 16),

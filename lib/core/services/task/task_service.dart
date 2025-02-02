@@ -7,7 +7,7 @@ abstract class TaskService {
 
   Future<UserTask> addTask(String title, UserData user);
 
-  Future<void> updateTask(UserTask task);
+  Future<void> updateTask(String newTitle, TaskStatus newStatus, UserTask task);
 
   Future<void> deleteTask(UserTask task);
 

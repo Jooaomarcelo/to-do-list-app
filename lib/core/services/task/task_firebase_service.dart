@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:to_do_list/core/models/user_data.dart';
 import 'package:to_do_list/core/models/user_task.dart';
 import 'package:to_do_list/core/services/auth/auth_service.dart';
@@ -33,6 +34,8 @@ class TaskFirebaseService implements TaskService {
       title: title,
     );
 
+    debugPrint('task: ${task.status.name}');
+
     final docRef = await store
         .collection('tasks')
         .withConverter(fromFirestore: _fromFirestore, toFirestore: _toFirestore)
@@ -43,10 +46,42 @@ class TaskFirebaseService implements TaskService {
   }
 
   @override
-  Future<void> updateTask(UserTask task) async {}
+  Future<void> updateTask(
+    String newTitle,
+    TaskStatus newStatus,
+    UserTask task,
+  ) async {
+    final store = FirebaseFirestore.instance;
+
+    final updatedTask = UserTask(
+      id: '',
+      userId: task.userId,
+      createdAt: task.createdAt,
+      title: newTitle,
+      status: newStatus,
+    );
+
+    await store
+        .collection('tasks')
+        .doc(task.id)
+        .withConverter(fromFirestore: _fromFirestore, toFirestore: _toFirestore)
+        .set(updatedTask);
+  }
 
   @override
   Future<void> deleteTask(UserTask task) async {}
+
+  Map<String, dynamic> _toFirestore(
+    UserTask task,
+    SetOptions? options,
+  ) {
+    return {
+      'userId': task.userId,
+      'createdAt': task.createdAt.toIso8601String(),
+      'title': task.title,
+      'status': task.status.name,
+    };
+  }
 
   UserTask _fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> doc,
@@ -57,17 +92,11 @@ class TaskFirebaseService implements TaskService {
       userId: doc['userId'],
       createdAt: DateTime.parse(doc['createdAt']),
       title: doc['title'],
+      status: doc['status'] == 'pending'
+          ? TaskStatus.pending
+          : doc['status'] == 'inProgress'
+              ? TaskStatus.inProgress
+              : TaskStatus.completed,
     );
-  }
-
-  Map<String, dynamic> _toFirestore(
-    UserTask task,
-    SetOptions? options,
-  ) {
-    return {
-      'userId': task.userId,
-      'createdAt': task.createdAt.toIso8601String(),
-      'title': task.title,
-    };
   }
 }
