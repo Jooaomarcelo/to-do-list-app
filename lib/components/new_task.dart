@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_list/core/services/auth/auth_service.dart';
+import 'package:to_do_list/core/services/task/task_service.dart';
 
 class NewTask extends StatefulWidget {
   const NewTask({super.key});
@@ -10,6 +11,7 @@ class NewTask extends StatefulWidget {
 
 class _NewTaskState extends State<NewTask> {
   String _task = '';
+  bool _isLoading = false;
 
   final _taskController = TextEditingController();
 
@@ -18,8 +20,17 @@ class _NewTaskState extends State<NewTask> {
 
     if (user == null) return;
 
-    // await TaskService().save(_task, user);
-    _taskController.clear();
+    try {
+      setState(() => _isLoading = true);
+
+      await TaskService().addTask(_task, user);
+    } catch (error) {
+      debugPrint('Erro ao adicionar tarefa: $error');
+    } finally {
+      setState(() => _isLoading = false);
+
+      _taskController.clear();
+    }
   }
 
   @override
@@ -34,7 +45,7 @@ class _NewTaskState extends State<NewTask> {
           Expanded(
             child: TextField(
               controller: _taskController,
-              onChanged: (value) => setState(() => _task = value),
+              onChanged: (title) => setState(() => _task = title),
               decoration: InputDecoration(
                 labelText: 'Nova tarefa',
                 border: OutlineInputBorder(
@@ -52,11 +63,17 @@ class _NewTaskState extends State<NewTask> {
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(8)),
             ),
-            onPressed: () {},
-            child: Icon(
-              Icons.add,
-              color: Colors.white,
-            ),
+            onPressed: () {
+              if (_task.trim().isNotEmpty) _addTask();
+            },
+            child: _isLoading
+                ? CircularProgressIndicator(
+                    color: Colors.white,
+                  )
+                : Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ),
           )
         ],
       ),

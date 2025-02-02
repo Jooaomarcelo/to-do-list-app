@@ -1,3 +1,4 @@
+import 'package:to_do_list/core/models/user_data.dart';
 import 'package:to_do_list/core/models/user_task.dart';
 import 'package:to_do_list/core/services/auth/auth_service.dart';
 import 'package:to_do_list/core/services/task/task_service.dart';
@@ -11,15 +12,35 @@ class TaskFirebaseService implements TaskService {
     final snapshots = store
         .collection('tasks')
         .where('userId', isEqualTo: AuthService().currentUser!.id)
-        .withConverter(fromFirestore: _fromFirestore, toFirestore: _toFirestore)
-        .orderBy('createdAt', descending: true)
+        .withConverter(
+          fromFirestore: _fromFirestore,
+          toFirestore: _toFirestore,
+        )
+        // .orderBy('createdAt', descending: true)
         .snapshots();
 
     return snapshots.map((snap) => snap.docs.map((doc) => doc.data()).toList());
   }
 
   @override
-  Future<void> addTask(UserTask task) async {}
+  Future<UserTask> addTask(String title, UserData user) async {
+    final store = FirebaseFirestore.instance;
+
+    final task = UserTask(
+      id: '',
+      userId: user.id,
+      createdAt: DateTime.now(),
+      title: title,
+    );
+
+    final docRef = await store
+        .collection('tasks')
+        .withConverter(fromFirestore: _fromFirestore, toFirestore: _toFirestore)
+        .add(task);
+
+    final doc = await docRef.get();
+    return doc.data()!;
+  }
 
   @override
   Future<void> updateTask(UserTask task) async {}
