@@ -16,6 +16,10 @@ class Tasks extends StatefulWidget {
 }
 
 class _TasksState extends State<Tasks> {
+  void _deleteTask(UserTask task) {
+    TaskService().deleteTask(task.id);
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<UserTask>>(
@@ -33,9 +37,9 @@ class _TasksState extends State<Tasks> {
                 final task = tasks[i];
 
                 return TaskTile(
-                  task: task,
-                  onTaskToggle: widget.onTaskToggle,
-                );
+                    task: task,
+                    onTaskToggle: widget.onTaskToggle,
+                    onDeleted: _deleteTask);
               });
         }
       },
