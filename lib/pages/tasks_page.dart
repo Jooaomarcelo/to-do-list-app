@@ -1,8 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:to_do_list/components/new_task.dart';
+import 'package:to_do_list/components/task_edit_form.dart';
+import 'package:to_do_list/components/tasks.dart';
+import 'package:to_do_list/core/models/user_task.dart';
 import 'package:to_do_list/core/services/auth/auth_service.dart';
 
-class TasksPage extends StatelessWidget {
+class TasksPage extends StatefulWidget {
   const TasksPage({super.key});
+
+  @override
+  State<TasksPage> createState() => _TasksPageState();
+}
+
+class _TasksPageState extends State<TasksPage> {
+  UserTask? _task;
+
+  void _onTaskToggle([UserTask? task]) {
+    setState(() {
+      if (_task == null) {
+        _task = task;
+      } else {
+        _task = null;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +45,23 @@ class TasksPage extends StatelessWidget {
           )
         ],
       ),
-      body: Center(
-        child: Text('Tasks'),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                NewTask(),
+                Expanded(
+                  child: Tasks(
+                    onTaskToggle: _onTaskToggle,
+                  ),
+                )
+              ],
+            ),
+            if (_task != null)
+              TaskEditForm(task: _task!, onClosed: _onTaskToggle),
+          ],
+        ),
       ),
     );
   }
