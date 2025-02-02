@@ -21,7 +21,17 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'To Do List',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          primary: Colors.blue[900],
+        ),
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.blue[900],
+          foregroundColor: Colors.white,
+          titleTextStyle: const TextStyle(
+            fontSize: 24,
+          ),
+        ),
         useMaterial3: true,
       ),
       home: const AuthOrAppPage(),
