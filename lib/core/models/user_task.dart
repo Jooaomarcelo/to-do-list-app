@@ -29,12 +29,4 @@ class UserTask {
         return 'Concluída';
     }
   }
-
-  void updateTitle(String newTitle) {
-    title = newTitle;
-  }
-
-  void updateStatus(TaskStatus newStatus) {
-    status = newStatus;
-  }
 }

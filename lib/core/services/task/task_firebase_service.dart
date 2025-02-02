@@ -69,7 +69,11 @@ class TaskFirebaseService implements TaskService {
   }
 
   @override
-  Future<void> deleteTask(UserTask task) async {}
+  Future<void> deleteTask(String taskId) async {
+    final store = FirebaseFirestore.instance;
+
+    await store.collection('tasks').doc(taskId).delete();
+  }
 
   Map<String, dynamic> _toFirestore(
     UserTask task,

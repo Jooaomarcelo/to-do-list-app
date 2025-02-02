@@ -9,7 +9,7 @@ abstract class TaskService {
 
   Future<void> updateTask(String newTitle, TaskStatus newStatus, UserTask task);
 
-  Future<void> deleteTask(UserTask task);
+  Future<void> deleteTask(String taskId);
 
   factory TaskService() => TaskFirebaseService();
 }
